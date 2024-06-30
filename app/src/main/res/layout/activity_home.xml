@@ -13,4 +13,13 @@
         android:textSize="24sp"
         android:layout_centerInParent="true" />
 
+    <Button
+        android:id="@+id/openInvoicingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Invoice"
+        android:layout_below="@id/welcomeTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
 </RelativeLayout>

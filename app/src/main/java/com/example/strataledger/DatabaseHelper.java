@@ -2,18 +2,29 @@ package com.example.strataledger;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.Cursor;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "StrataLedger.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2; // Incremented version number
+
+    // User table
     private static final String TABLE_USERS = "users";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_USERNAME = "username";
     private static final String COLUMN_PASSWORD = "password";
+
+    // Invoice table
+    private static final String TABLE_INVOICES = "invoices";
+    private static final String COLUMN_INVOICE_ID = "invoice_id";
+    private static final String COLUMN_INVOICE_NUMBER = "invoice_number";
+    private static final String COLUMN_INVOICE_DATE = "invoice_date";
+    private static final String COLUMN_CLIENT_NAME = "client_name";
+    private static final String COLUMN_AMOUNT = "amount";
+    private static final String COLUMN_DESCRIPTION = "description";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -26,11 +37,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_USERNAME + " TEXT,"
                 + COLUMN_PASSWORD + " TEXT" + ")";
         db.execSQL(CREATE_USERS_TABLE);
+
+        String CREATE_INVOICES_TABLE = "CREATE TABLE " + TABLE_INVOICES + "("
+                + COLUMN_INVOICE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + COLUMN_INVOICE_NUMBER + " TEXT,"
+                + COLUMN_INVOICE_DATE + " TEXT,"
+                + COLUMN_CLIENT_NAME + " TEXT,"
+                + COLUMN_AMOUNT + " TEXT,"
+                + COLUMN_DESCRIPTION + " TEXT" + ")";
+        db.execSQL(CREATE_INVOICES_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INVOICES);
         onCreate(db);
     }
 
@@ -73,4 +94,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursorCount > 0;
     }
 
+    public boolean addInvoice(String invoiceNumber, String invoiceDate, String clientName, String amount, String description) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_INVOICE_NUMBER, invoiceNumber);
+        values.put(COLUMN_INVOICE_DATE, invoiceDate);
+        values.put(COLUMN_CLIENT_NAME, clientName);
+        values.put(COLUMN_AMOUNT, amount);
+        values.put(COLUMN_DESCRIPTION, description);
+
+        long result = db.insert(TABLE_INVOICES, null, values);
+        db.close();
+
+        return result != -1;
+    }
 }
